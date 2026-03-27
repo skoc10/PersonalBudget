@@ -9,12 +9,35 @@ public class PersonalBudgetPermissionDefinitionProvider : PermissionDefinitionPr
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var myGroup = context.AddGroup(PersonalBudgetPermissions.GroupName);
+        var myGroup = context.AddGroup(PersonalBudgetPermissions.GroupName, L("Permission:PersonalBudget"));
 
+        // Categories permissions
+        var categoriesPermission = myGroup.AddPermission(
+            PersonalBudgetPermissions.Categories.Default,
+            L("Permission:Categories"));
+        categoriesPermission.AddChild(
+            PersonalBudgetPermissions.Categories.Create,
+            L("Permission:Categories.Create"));
+        categoriesPermission.AddChild(
+            PersonalBudgetPermissions.Categories.Edit,
+            L("Permission:Categories.Edit"));
+        categoriesPermission.AddChild(
+            PersonalBudgetPermissions.Categories.Delete,
+            L("Permission:Categories.Delete"));
 
-        
-        //Define your own permissions here. Example:
-        //myGroup.AddPermission(PersonalBudgetPermissions.MyPermission1, L("Permission:MyPermission1"));
+        // Expenses permissions
+        var expensesPermission = myGroup.AddPermission(
+            PersonalBudgetPermissions.Expenses.Default,
+            L("Permission:Expenses"));
+        expensesPermission.AddChild(
+            PersonalBudgetPermissions.Expenses.Create,
+            L("Permission:Expenses.Create"));
+        expensesPermission.AddChild(
+            PersonalBudgetPermissions.Expenses.Edit,
+            L("Permission:Expenses.Edit"));
+        expensesPermission.AddChild(
+            PersonalBudgetPermissions.Expenses.Delete,
+            L("Permission:Expenses.Delete"));
     }
 
     private static LocalizableString L(string name)

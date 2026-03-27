@@ -1,0 +1,35 @@
+@page
+@using PersonalBudget.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@model PersonalBudget.Pages.Expenses.CreateModalModel
+@inject IStringLocalizer<PersonalBudgetResource> L
+
+<abp-modal>
+    <abp-modal-header title="@L["NewExpense"].Value"></abp-modal-header>
+    <abp-modal-body>
+        <form id="CreateExpenseForm" method="post">
+            <div class="mb-3">
+                <label class="form-label" for="Expense_CategoryId">@L["Category"]</label>
+                <select id="Expense_CategoryId" name="Expense.CategoryId" class="form-select" required>
+                    <option value="">-- @L["SelectCategory"].Value --</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+            <abp-input asp-for="Expense.Description" label="@L["ExpenseDescription"].Value" />
+            <div class="mb-3">
+                <label class="form-label" for="Expense_Amount">@L["Amount"]</label>
+                <input type="number" id="Expense_Amount" name="Expense.Amount" class="form-control" step="0.01" min="0.01" required asp-for="Expense.Amount" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="Expense_Date">@L["Date"]</label>
+                <input type="date" id="Expense_Date" name="Expense.Date" class="form-control" required asp-for="Expense.Date" />
+            </div>
+            <abp-input asp-for="Expense.Notes" label="@L["Notes"].Value" />
+        </form>
+    </abp-modal-body>
+    <abp-modal-footer buttons="@(AbpModalButtons.Save | AbpModalButtons.Cancel)"></abp-modal-footer>
+</abp-modal>
