@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PersonalBudget.Permissions;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.PermissionManagement;
 
@@ -11,11 +13,11 @@ namespace PersonalBudget.Data;
 public class PermissionSeeder : ITransientDependency
 {
     private readonly IPermissionManager _permissionManager;
-    private readonly IIdentityRoleRepository _roleRepository;
+    private readonly IRepository<IdentityRole, Guid> _roleRepository;
 
     public PermissionSeeder(
         IPermissionManager permissionManager,
-        IIdentityRoleRepository roleRepository)
+        IRepository<IdentityRole, Guid> roleRepository)
     {
         _permissionManager = permissionManager;
         _roleRepository = roleRepository;
@@ -24,7 +26,7 @@ public class PermissionSeeder : ITransientDependency
     public async Task SeedAsync()
     {
         // Get or create admin role
-        var adminRole = await _roleRepository.FindByNameAsync("admin");
+        var adminRole = await _roleRepository.FirstOrDefaultAsync(x => x.Name == "admin");
         if (adminRole == null)
         {
             return; // If admin role doesn't exist, skip seeding
@@ -46,7 +48,7 @@ public class PermissionSeeder : ITransientDependency
         // Grant permissions to admin role
         foreach (var permission in permissionsToGrant)
         {
-            await _permissionManager.SetAsync(permission, "R:" + adminRole.Name, true);
+            await _permissionManager.SetAsync(permission, "R", adminRole.Name, true);
         }
     }
 }
