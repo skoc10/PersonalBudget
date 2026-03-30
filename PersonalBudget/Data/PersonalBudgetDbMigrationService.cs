@@ -15,17 +15,20 @@ public class PersonalBudgetDbMigrationService : ITransientDependency
     private readonly PersonalBudgetDbSchemaMigrator _dbSchemaMigrator;
     private readonly ITenantRepository _tenantRepository;
     private readonly ICurrentTenant _currentTenant;
+    private readonly PermissionSeeder _permissionSeeder;
 
     public PersonalBudgetDbMigrationService(
         IDataSeeder dataSeeder,
         PersonalBudgetDbSchemaMigrator dbSchemaMigrator,
         ITenantRepository tenantRepository,
-        ICurrentTenant currentTenant)
+        ICurrentTenant currentTenant,
+        PermissionSeeder permissionSeeder)
     {
         _dataSeeder = dataSeeder;
         _dbSchemaMigrator = dbSchemaMigrator;
         _tenantRepository = tenantRepository;
         _currentTenant = currentTenant;
+        _permissionSeeder = permissionSeeder;
 
         Logger = NullLogger<PersonalBudgetDbMigrationService>.Instance;
     }
@@ -90,5 +93,11 @@ public class PersonalBudgetDbMigrationService : ITransientDependency
             .WithProperty(IdentityDataSeedContributor.AdminEmailPropertyName, PersonalBudgetConsts.AdminEmailDefaultValue)
             .WithProperty(IdentityDataSeedContributor.AdminPasswordPropertyName, PersonalBudgetConsts.AdminPasswordDefaultValue)
         );
+
+        // Seed permissions for Categories and Expenses
+        if (tenant == null) // Only seed permissions to host admin role
+        {
+            await _permissionSeeder.SeedAsync();
+        }
     }
 }
